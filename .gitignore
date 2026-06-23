@@ -5,3 +5,9 @@ __pycache__/
 .env
 *.db
 .pytest_cache/
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+/vendor
+Gemfile.lock
