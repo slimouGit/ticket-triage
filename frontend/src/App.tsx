@@ -79,6 +79,14 @@ function App() {
       <header>
         <h1>Ticket Triage</h1>
         <p className="subtitle">Analyze support tickets with a local LLM</p>
+        <a
+          className="swagger-link"
+          href="http://127.0.0.1:8000/docs#/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          API Docs (Swagger)
+        </a>
       </header>
 
       <main>
