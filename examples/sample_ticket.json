@@ -1,0 +1,7 @@
+{
+  "title": "Checkout fails when coupon code is used",
+  "description": "When a customer enters coupon SUMMER10 and clicks Pay, the checkout page shows a 500 error. It works without the coupon. This started after yesterday's deployment.",
+  "reported_by": "customer-support",
+  "environment": "production",
+  "logs": "ERROR CouponService NullPointerException at applyDiscount line 87"
+}
