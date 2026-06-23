@@ -1,5 +1,8 @@
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from openai import APIConnectionError, APIError, APITimeoutError, NotFoundError
 from pydantic import ValidationError
 
@@ -18,6 +21,7 @@ llm_client = OpenAICompatibleLLMClient(
 )
 triage_service = TicketTriageService(llm_client=llm_client)
 repository = TicketRepository(db_path=settings.database_url)
+frontend_dist = Path(__file__).resolve().parents[1] / "frontend" / "dist"
 
 app = FastAPI(
     title="Local LLM Ticket Triage",
@@ -31,6 +35,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+def _frontend_index() -> FileResponse:
+    return FileResponse(frontend_dist / "index.html")
 
 
 @app.get("/health")
@@ -92,3 +100,30 @@ def delete_ticket(ticket_id: int) -> dict:
     if not deleted:
         raise HTTPException(status_code=404, detail="Ticket not found")
     return {"deleted": True, "ticket_id": ticket_id}
+
+
+@app.get("/")
+def frontend_root() -> FileResponse:
+    if (frontend_dist / "index.html").exists():
+        return _frontend_index()
+    raise HTTPException(
+        status_code=404,
+        detail="Frontend build not found. Run 'cd frontend && npm run build'.",
+    )
+
+
+@app.get("/{full_path:path}")
+def frontend_spa_fallback(full_path: str) -> FileResponse:
+    if full_path.startswith("tickets") or full_path == "health":
+        raise HTTPException(status_code=404, detail="Not found")
+
+    if not (frontend_dist / "index.html").exists():
+        raise HTTPException(
+            status_code=404,
+            detail="Frontend build not found. Run 'cd frontend && npm run build'.",
+        )
+
+    requested_file = frontend_dist / full_path
+    if requested_file.is_file():
+        return FileResponse(requested_file)
+    return _frontend_index()
