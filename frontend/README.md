@@ -1,6 +1,32 @@
-# React + TypeScript + Vite
+# Ticket Triage – Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript frontend for the [Local LLM Ticket Triage](../README.md) app.
+
+It allows users to:
+
+- submit support tickets
+- analyze them with a local LLM
+- review structured analysis results (category, severity, root cause, steps, actions, test ideas)
+- browse and delete stored ticket analyses
+
+## Run (dev mode)
+
+```bash
+npm install
+npm run dev
+```
+
+Requires the FastAPI backend running on `http://127.0.0.1:8000`.
+
+## Build (production)
+
+```bash
+npm run build
+```
+
+Output goes to `dist/` and is served by FastAPI on `http://127.0.0.1:8000`.
+
+---
 
 Currently, two official plugins are available:
 

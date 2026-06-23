@@ -6,6 +6,10 @@ This project is designed as a reference portfolio project for AI Engineering and
 
 It includes a React frontend (`frontend/`) that can run in dev mode or be built and served by FastAPI on port 8000.
 
+## Screenshot
+
+![Ticket Triage UI](docs/screenshots/ticket-triage-ui.png)
+
 ## What this project demonstrates
 
 - Local LLM integration through OpenAI-compatible APIs
