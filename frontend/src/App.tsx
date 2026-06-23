@@ -22,6 +22,7 @@ function App() {
   const [form, setForm] = useState<TicketInput>(EMPTY_FORM);
   const [result, setResult] = useState<TicketAnalysisResponse | null>(null);
   const [tickets, setTickets] = useState<StoredTicket[]>([]);
+  const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,6 +46,7 @@ function App() {
     try {
       const res = await analyzeTicket(form);
       setResult(res);
+      setSelectedTicketId(res.ticket_id);
       await loadTickets();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unexpected error");
@@ -55,8 +57,20 @@ function App() {
 
   const handleDelete = async (id: number) => {
     await deleteTicket(id);
-    if (result?.ticket_id === id) setResult(null);
+    if (result?.ticket_id === id) {
+      setResult(null);
+      setSelectedTicketId(null);
+    }
     await loadTickets();
+  };
+
+  const handleSelectTicket = (ticket: StoredTicket) => {
+    setSelectedTicketId(ticket.id);
+    setError(null);
+    setResult({
+      ticket_id: ticket.id,
+      analysis: ticket.analysis,
+    });
   };
 
   return (
@@ -164,13 +178,35 @@ function App() {
         {tickets.length === 0 && <p className="muted">No tickets stored yet.</p>}
         <div className="ticket-list">
           {tickets.map((t) => (
-            <div key={t.id} className="ticket-card">
+            <div
+              key={t.id}
+              className={`ticket-card ${selectedTicketId === t.id ? "ticket-card-active" : ""}`}
+              onClick={() => handleSelectTicket(t)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handleSelectTicket(t);
+                }
+              }}
+              title="Show ticket analysis"
+            >
               <div className="ticket-card-header">
                 <span className="ticket-id">#{t.id}</span>
                 <span className={`badge ${SEVERITY_CLASS[t.analysis.severity]}`}>{t.analysis.severity}</span>
                 <span className="category">{t.analysis.category}</span>
                 <span className="muted ticket-date">{t.created_at.slice(0, 16)}</span>
-                <button className="delete-btn" onClick={() => handleDelete(t.id)} title="Delete">x</button>
+                <button
+                  className="delete-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    void handleDelete(t.id);
+                  }}
+                  title="Delete"
+                >
+                  x
+                </button>
               </div>
               <p className="ticket-title">{t.title}</p>
               <p className="muted">{t.analysis.summary}</p>

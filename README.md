@@ -4,6 +4,8 @@ A clean FastAPI backend that analyzes software support tickets with a local LLM 
 
 This project is designed as a reference portfolio project for AI Engineering and Backend Engineering roles.
 
+It includes a React frontend (`frontend/`) that can run in dev mode or be built and served by FastAPI on port 8000.
+
 ## What this project demonstrates
 
 - Local LLM integration through OpenAI-compatible APIs
@@ -24,6 +26,8 @@ This project is designed as a reference portfolio project for AI Engineering and
 - OpenAI Python SDK (for OpenAI-compatible local servers)
 - SQLite
 - Pytest
+- React + TypeScript
+- Vite
 
 ## Architecture
 
@@ -63,6 +67,11 @@ ticket-triage/
 │   │   └── ticket.py
 │   └── services/
 │       └── triage_service.py
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   ├── package.json
+│   └── vite.config.ts
 ├── examples/
 │   └── sample_ticket.json
 ├── tests/
@@ -90,6 +99,14 @@ python -m venv .venv
 
 ```bash
 pip install -r requirements.txt
+```
+
+Install frontend dependencies:
+
+```bash
+cd frontend
+npm install
+cd ..
 ```
 
 ### 3. Configure environment
@@ -136,6 +153,102 @@ Swagger UI:
 ```text
 http://127.0.0.1:8000/docs
 ```
+
+## Frontend usage
+
+You have two ways to run the frontend.
+
+### Option A: Dev mode (Vite + backend API)
+
+Terminal 1 (backend):
+
+```bash
+python -m uvicorn app.main:app --reload
+```
+
+Terminal 2 (frontend):
+
+```bash
+cd frontend
+npm run dev
+```
+
+Open:
+
+```text
+http://localhost:5173
+```
+
+### Option B: Single URL on port 8000 (recommended for demo/deploy)
+
+Build frontend assets:
+
+```bash
+cd frontend
+npm run build
+cd ..
+```
+
+Then run FastAPI:
+
+```bash
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+Open:
+
+```text
+http://127.0.0.1:8000
+```
+
+FastAPI serves files from `frontend/dist` (including SPA fallback routes).
+
+## Build and deploy
+
+Use this checklist to deploy on a server or VPS.
+
+### 1. Clone and install backend
+
+```bash
+git clone https://github.com/slimouGit/ticket-triage.git
+cd ticket-triage
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+### 2. Configure environment
+
+```bash
+cp .env.example .env
+```
+
+Set `.env` values for your LLM provider (`LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY`).
+
+### 3. Build frontend
+
+```bash
+cd frontend
+npm ci
+npm run build
+cd ..
+```
+
+### 4. Run app (API + frontend)
+
+```bash
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+### 5. Verify deployment
+
+- Frontend: `GET /`
+- API health: `GET /health`
+- API docs: `GET /docs`
+
+### 6. Keep it running
+
+Use a process manager (for example systemd, PM2, supervisor, or Docker) so the app restarts after failures and reboot.
 
 ## API overview
 
@@ -190,7 +303,7 @@ If `/tickets/analyze` returns an error like model not found:
 - No external ticket integrations
 - No background job queue
 - SQLite only
-- Focused on backend and LLM orchestration, not frontend
+- Frontend is intentionally lightweight and focused on demo workflows
 
 ## License
 

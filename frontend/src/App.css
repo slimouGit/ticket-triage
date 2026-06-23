@@ -200,6 +200,22 @@ button[type="submit"]:disabled { background: #334155; color: #64748b; cursor: no
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.ticket-card:hover {
+  border-color: #475569;
+}
+
+.ticket-card:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+.ticket-card-active {
+  border-color: #6366f1;
+  background: #111827;
 }
 
 .ticket-card-header {
