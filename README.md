@@ -12,6 +12,8 @@ It includes a React frontend (`frontend/`) that can run in dev mode or be built 
 
 ![Ticket Triage – Analysis Result](docs/screenshots/ticket-triage-analysis.png)
 
+![Ticket JSON API Response](docs/screenshots/ticket-json.png)
+
 ## What this project demonstrates
 
 - Local LLM integration through OpenAI-compatible APIs
